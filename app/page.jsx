@@ -543,7 +543,7 @@ export default function JP8218CampCalculator() {
                 JP8218 deployable camp calculator
               </h1>
               <p className="mt-3 max-w-3xl text-slate-600">
-                Indicative planning model for deployment footprint and sustainment demand. The useful upgrade is not more decoration. It is side-by-side scenario comparison so teams can test trade-offs.
+                Welcome. This tool is a simple thought experiment inspired by the JP8218 Deployable Infrastructure program. It allows you to explore the logistics footprint behind deployable camps — how changes in camp size, environment and duration affect deployment load, sustainment demand and transport requirements. The model is deliberately simplified and indicative, but it provides a useful way to visualise the scale and trade-offs that sit behind expeditionary infrastructure concepts. Your feedback is very welcome. Email darian.macey@decnet.com.au.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
