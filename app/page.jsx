@@ -5,7 +5,6 @@ import PptxGenJS from "pptxgenjs";
 
 
 export default function JP8218CampCalculator() {
-  const { useMemo, useState } = React;
 
   const campOptions = [75, 150, 500, 1500];
   const durationOptions = [7, 30, 180];
