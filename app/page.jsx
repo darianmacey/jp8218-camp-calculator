@@ -3,9 +3,7 @@
 import React, { useMemo, useState } from "react";
 import PptxGenJS from "pptxgenjs";
 
-
 export default function JP8218CampCalculator() {
-
   const campOptions = [75, 150, 500, 1500];
   const durationOptions = [7, 30, 180];
   const environments = {
@@ -70,14 +68,14 @@ export default function JP8218CampCalculator() {
 
     const containerEstimate = roundUp(
       accommodationModules * 1.4 +
-      salUnits * 0.8 +
-      kitchenModules * 3.5 +
-      waterTreatmentUnits * 2.5 +
-      generators * 0.9 +
-      officeModules * 1.1 +
-      maintenanceShelters * 3.0 +
-      warehouseModules * 5.0 +
-      personnel / storageContainerPerPeople
+        salUnits * 0.8 +
+        kitchenModules * 3.5 +
+        waterTreatmentUnits * 2.5 +
+        generators * 0.9 +
+        officeModules * 1.1 +
+        maintenanceShelters * 3.0 +
+        warehouseModules * 5.0 +
+        personnel / storageContainerPerPeople
     );
 
     const trucks = roundUp(containerEstimate * 0.72);
@@ -139,8 +137,8 @@ export default function JP8218CampCalculator() {
     [secondary]
   );
 
-  const MetricCard = ({ title, value, subtext }) => (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+  const MetricCard = ({ title, value, subtext, accent = false }) => (
+    <div className={`rounded-2xl border p-4 shadow-sm ${accent ? "border-sky-200 bg-sky-50" : "border-slate-200 bg-white"}`}>
       <div className="text-sm text-slate-500">{title}</div>
       <div className="mt-1 text-2xl font-semibold text-slate-900">{value}</div>
       {subtext ? <div className="mt-1 text-sm text-slate-500">{subtext}</div> : null}
@@ -148,7 +146,7 @@ export default function JP8218CampCalculator() {
   );
 
   const ScenarioControls = ({ title, value, onChange }) => (
-    <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+    <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
         <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Scenario</div>
@@ -195,7 +193,7 @@ export default function JP8218CampCalculator() {
   );
 
   const ScenarioSummary = ({ title, model, accent }) => (
-    <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
           <div className="text-sm text-slate-500">{title}</div>
@@ -240,24 +238,16 @@ export default function JP8218CampCalculator() {
     const deltaDiesel = secondaryModel.dieselPerDay - primaryModel.dieselPerDay;
 
     if (deltaContainers !== 0) {
-      items.push(
-        `Scenario B changes the deployment burden by ${fmt(Math.abs(deltaContainers))} containers compared with Scenario A.`
-      );
+      items.push(`Scenario B changes the deployment burden by ${fmt(Math.abs(deltaContainers))} containers compared with Scenario A.`);
     }
     if (deltaWater !== 0) {
-      items.push(
-        `Daily water demand shifts by ${fmt(Math.abs(deltaWater))} litres. That is usually where naive camp concepts start to fall apart.`
-      );
+      items.push(`Daily water demand shifts by ${fmt(Math.abs(deltaWater))} litres. That is usually where naive camp concepts start to fall apart.`);
     }
     if (deltaDiesel !== 0) {
-      items.push(
-        `Daily diesel demand moves by ${fmt(Math.abs(deltaDiesel))} litres, which directly affects convoy size, storage and resilience.`
-      );
+      items.push(`Daily diesel demand moves by ${fmt(Math.abs(deltaDiesel))} litres, which directly affects convoy size, storage and resilience.`);
     }
     if (secondaryModel.environmentLabel !== primaryModel.environmentLabel) {
-      items.push(
-        `Environment alone changes the footprint and setup assumptions. That is the point: the same brochure solution is not the same operational solution.`
-      );
+      items.push(`Environment alone changes the footprint and setup assumptions. That is the point: the same brochure solution is not the same operational solution.`);
     }
     return items.slice(0, 4);
   }, [primaryModel, secondaryModel]);
@@ -290,33 +280,27 @@ export default function JP8218CampCalculator() {
       margin: 0,
     });
 
-    slide.addText(
-      `Scenario A: ${primaryModel.personnel} personnel | ${primaryModel.duration} days | ${primaryModel.environmentLabel}`,
-      {
-        x: 0.4,
+    slide.addText(`Scenario A: ${primaryModel.personnel} personnel | ${primaryModel.duration} days | ${primaryModel.environmentLabel}`, {
+      x: 0.4,
+      y: 0.7,
+      w: 5.8,
+      h: 0.22,
+      fontSize: 10,
+      color: "475569",
+      margin: 0,
+    });
+
+    if (compareEnabled) {
+      slide.addText(`Scenario B: ${secondaryModel.personnel} personnel | ${secondaryModel.duration} days | ${secondaryModel.environmentLabel}`, {
+        x: 6.5,
         y: 0.7,
         w: 5.8,
         h: 0.22,
         fontSize: 10,
         color: "475569",
         margin: 0,
-      }
-    );
-
-    if (compareEnabled) {
-      slide.addText(
-        `Scenario B: ${secondaryModel.personnel} personnel | ${secondaryModel.duration} days | ${secondaryModel.environmentLabel}`,
-        {
-          x: 6.5,
-          y: 0.7,
-          w: 5.8,
-          h: 0.22,
-          fontSize: 10,
-          color: "475569",
-          margin: 0,
-          align: "right",
-        }
-      );
+        align: "right",
+      });
     }
 
     const addCard = (x, y, w, h, title, value, note, fill = "FFFFFF") => {
@@ -499,11 +483,13 @@ export default function JP8218CampCalculator() {
       margin: 0,
     });
 
-    const observationLines = (compareEnabled ? insights : [
-      `This scenario implies an indicative deployment load of ${fmt(primaryModel.containerEstimate)} containers and ${fmt(primaryModel.trucks)} trucks.`,
-      `Daily sustainment demand is approximately ${fmt(primaryModel.waterPerDay)} litres of water and ${fmt(primaryModel.dieselPerDay)} litres of diesel.`,
-      `The model is suitable for early discussion only. It is not a compliant engineering, commercial or transport certification tool.`,
-    ]).slice(0, 4);
+    const observationLines = (compareEnabled
+      ? insights
+      : [
+          `This scenario implies an indicative deployment load of ${fmt(primaryModel.containerEstimate)} containers and ${fmt(primaryModel.trucks)} trucks.`,
+          `Daily sustainment demand is approximately ${fmt(primaryModel.waterPerDay)} litres of water and ${fmt(primaryModel.dieselPerDay)} litres of diesel.`,
+          `The model is suitable for early discussion only. It is not a compliant engineering, commercial or transport certification tool.`,
+        ]).slice(0, 4);
 
     observationLines.forEach((line, idx) => {
       slide.addText(`• ${line}`, {
@@ -532,51 +518,132 @@ export default function JP8218CampCalculator() {
     await pptx.writeFile({ fileName });
   };
 
+  const headerNote = "A simple planning tool to explore deployment footprint and sustainment demand for expeditionary camp concepts.";
+
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-8">
+    <div className="min-h-screen bg-slate-100 p-6 md:p-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <div className="text-sm uppercase tracking-[0.2em] text-slate-500">DECNet concept tool</div>
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+            <div className="max-w-4xl">
+              <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Capability planning tool</div>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-                JP8218 deployable camp calculator
+                JP8218 Deployable Camp Calculator
               </h1>
-              <p className="mt-3 max-w-3xl text-slate-600">
-                Welcome. This tool is a simple thought experiment inspired by the JP8218 Deployable Infrastructure program. It allows you to explore the logistics footprint behind deployable camps — how changes in camp size, environment and duration affect deployment load, sustainment demand and transport requirements. The model is deliberately simplified and indicative, but it provides a useful way to visualise the scale and trade-offs that sit behind expeditionary infrastructure concepts. Your feedback is very welcome. Email darian.macey@decnet.com.au.
+              <p className="mt-3 max-w-3xl text-base leading-7 text-slate-700">
+                {headerNote}
               </p>
+              <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                <div className="font-medium text-slate-900">About this tool</div>
+                <p className="mt-2">
+                  Welcome. If you have arrived here from my LinkedIn network, this tool is a simple thought experiment inspired by the JP8218 Deployable Infrastructure program. It allows you to explore the logistics footprint behind deployable camps — how changes in camp size, environment and duration affect deployment load, sustainment demand and transport requirements. The model is deliberately simplified and indicative, but it provides a useful way to visualise the scale and trade-offs that sit behind expeditionary infrastructure concepts.
+                </p>
+                <p className="mt-2 text-slate-600">
+                  Feedback from practitioners is very welcome. The assumptions used in the model are deliberately simplified and should be treated as indicative only.
+                </p>
+              </div>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-            <label className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-              <input
-                type="checkbox"
-                checked={compareEnabled}
-                onChange={(e) => setCompareEnabled(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300"
+
+            <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-slate-50 p-5">
+              <img
+                src="https://decnet.com.au/wp-content/uploads/2026/03/DECNet-10_Blue-and-Orange_horizontal-scaled.png"
+                alt="DECNet logo"
+                className="h-auto w-full"
               />
-              Enable scenario comparison
-            </label>
-            <button
-              onClick={exportBriefingSlide}
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
-            >
-              Export briefing slide
-            </button>
-          </div>
+              <div className="mt-5 grid gap-3">
+                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                  <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Publisher</div>
+                  <div className="mt-1 text-sm font-medium text-slate-900">DECNet</div>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                  <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Status</div>
+                  <div className="mt-1 text-sm font-medium text-slate-900">Indicative planning tool</div>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                  <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Version</div>
+                  <div className="mt-1 text-sm font-medium text-slate-900">0.2</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <ScenarioControls title="Scenario A" value={primary} onChange={setPrimary} />
-        {compareEnabled ? <ScenarioControls title="Scenario B" value={secondary} onChange={setSecondary} /> : null}
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Scenario definition</div>
+              <h2 className="mt-1 text-xl font-semibold text-slate-900">Define the scenario</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Start by defining the camp population, duration and environment. Then compare two scenarios to see how the deployment and sustainment burden changes.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={compareEnabled}
+                  onChange={(e) => setCompareEnabled(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300"
+                />
+                Enable scenario comparison
+              </label>
+              <button
+                onClick={exportBriefingSlide}
+                className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
+              >
+                Export briefing slide
+              </button>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-4 xl:grid-cols-2">
+            <ScenarioControls title="Scenario A" value={primary} onChange={setPrimary} />
+            {compareEnabled ? <ScenarioControls title="Scenario B" value={secondary} onChange={setSecondary} /> : <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm leading-6 text-slate-600">Enable Scenario B to compare two camp concepts side by side.</div>}
+          </div>
+        </div>
 
-        <ScenarioSummary title="Scenario A" model={primaryModel} accent="bg-slate-800" />
-        {compareEnabled ? <ScenarioSummary title="Scenario B" model={secondaryModel} accent="bg-sky-500" /> : null}
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Deployment footprint</div>
+              <h2 className="mt-1 text-xl font-semibold text-slate-900">Movement and establishment burden</h2>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-4 xl:grid-cols-2">
+            <ScenarioSummary title="Scenario A" model={primaryModel} accent="bg-slate-800" />
+            {compareEnabled ? <ScenarioSummary title="Scenario B" model={secondaryModel} accent="bg-sky-500" /> : null}
+          </div>
+        </div>
 
         <div className="grid gap-6 xl:grid-cols-3">
           <div className="xl:col-span-2 space-y-6">
-            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-slate-900">Scenario comparison</h2>
+                <div>
+                  <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Sustainment demand</div>
+                  <h2 className="mt-1 text-xl font-semibold text-slate-900">Primary scenario resource demand</h2>
+                </div>
+                <div className="text-sm text-slate-500">Scenario A</div>
+              </div>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <MetricCard title="Daily water" value={`${fmt(primaryModel.waterPerDay)} L`} subtext="Indicative daily requirement" accent />
+                <MetricCard title="Daily food" value={`${fmt(primaryModel.foodPerDayKg)} kg`} subtext="Indicative daily requirement" accent />
+                <MetricCard title="Daily diesel" value={`${fmt(primaryModel.dieselPerDay)} L`} subtext="Indicative daily requirement" accent />
+                <MetricCard title="Daily waste" value={`${fmt(primaryModel.wastePerDayKg)} kg`} subtext="Indicative daily output" accent />
+              </div>
+              <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                <div className="font-medium text-slate-900">What does this mean?</div>
+                <p className="mt-2">
+                  A deployable camp can require a surprisingly large logistics train before sustainment even begins. The infrastructure is only part of the story. The more difficult question is often how much movement, fuel, water and support effort the concept imposes once it is deployed.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Comparison insights</div>
+                  <h2 className="mt-1 text-xl font-semibold text-slate-900">Trade-off summary</h2>
+                </div>
                 <div className="text-sm text-slate-500">A versus B</div>
               </div>
 
@@ -601,15 +668,18 @@ export default function JP8218CampCalculator() {
                 </div>
               ) : (
                 <div className="mt-5 rounded-2xl bg-slate-50 p-5 text-sm text-slate-600">
-                  Comparison is switched off. That is fine for a demo, but the real value starts when you compare two options and expose what changes under the hood.
+                  Comparison is switched off. Enable Scenario B to test trade-offs between two camp concepts.
                 </div>
               )}
             </div>
 
-            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-slate-900">Primary scenario subsystem estimate</h2>
-                <div className="text-sm text-slate-500">Indicative modular breakdown</div>
+                <div>
+                  <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Structure and systems</div>
+                  <h2 className="mt-1 text-xl font-semibold text-slate-900">Primary scenario subsystem estimate</h2>
+                </div>
+                <div className="text-sm text-slate-500">Scenario A</div>
               </div>
               <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <MetricCard title="Accommodation modules" value={fmt(primaryModel.accommodationModules)} subtext="Assumed at 15 personnel per module" />
@@ -626,15 +696,17 @@ export default function JP8218CampCalculator() {
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900">Comparison insights</h2>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Analyst notes</div>
+              <h2 className="mt-1 text-xl font-semibold text-slate-900">What stands out</h2>
               <div className="mt-4 space-y-3">
                 {compareEnabled ? insights.map((item, idx) => <InsightPill key={idx}>{item}</InsightPill>) : <InsightPill>Enable Scenario B to generate comparison insights.</InsightPill>}
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900">Primary scenario totals</h2>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Duration totals</div>
+              <h2 className="mt-1 text-xl font-semibold text-slate-900">Primary scenario cumulative demand</h2>
               <div className="mt-5 space-y-4 text-sm">
                 <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
                   <span className="text-slate-600">Water</span>
@@ -655,8 +727,9 @@ export default function JP8218CampCalculator() {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900">Assumptions</h2>
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="text-sm uppercase tracking-[0.18em] text-slate-500">Model basis</div>
+              <h2 className="mt-1 text-xl font-semibold text-slate-900">Assumptions and caveats</h2>
               <div className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
                 <p>
                   This model is intentionally simple. It is built for early discussion, not compliance, pricing, or engineering certification.
@@ -668,7 +741,7 @@ export default function JP8218CampCalculator() {
                   Larger camps trigger warehousing and maintenance elements because forward logistics nodes have a different burden to a small temporary camp.
                 </p>
                 <p>
-                  The mistake would be treating one scenario as “the answer”. The better use is comparing options and exposing what really changes.
+                  The right use is to test scale and assumptions. The wrong use is to treat the output as a final answer.
                 </p>
               </div>
             </div>
